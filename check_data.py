@@ -1,5 +1,6 @@
 import json
 import base64
+import binascii
 import os
 
 def safely_examine_data():
@@ -11,32 +12,34 @@ def safely_examine_data():
     
     try:
         with open('data.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
+            content = f.read()
+            data = json.loads(content)
         
         print("=== JSON Structure ===")
         print(f"Top-level keys: {list(data.keys())}")
         
         if 'settings' in data:
-            settings = data['settings']
+            content = data['settings']
             print(f"\n=== Settings Content ===")
-            print(f"Settings type: {type(settings)}")
-            print(f"Settings length: {len(str(settings))}")
+            print(f"Settings type: {type(content)}")
+            print(f"Settings length: {len(str(content))}")
             
             # Try to decode if it's base64
             try:
-                decoded = base64.b64decode(settings).decode('utf-8')
-                print(f"\n=== Decoded Settings (first 500 chars) ===")
-                print(decoded[:500])
-                if len(decoded) > 500:
-                    print("... (truncated)")
-            except:
+                decoded_content = base64.b64decode(content).decode('utf-8', errors='ignore')
+                # print(f"\n=== Decoded Settings (first 500 chars) ===")
+                # print(decoded_content[:500])
+                # if len(decoded_content) > 500:
+                #     print("... (truncated)")
+            except (binascii.Error, UnicodeDecodeError):
                 print("Settings is not base64 encoded")
-                print(f"Raw settings (first 500 chars): {str(settings)[:500]}")
-        
-        # Look for URLs in the data
+                print(f"Raw settings (first 500 chars): {str(content)[:500]}")
+                decoded_content = content
+
+        # Look for URLs in the data using the same pattern as main.py
         import re
-        all_text = json.dumps(data)
-        urls = re.findall(r'https?://[^\s<>"]+', all_text)
+        pattern = r'https?:?/+[a-zA-Z0-9\-._~:/?#[\]@!$&\'()*+,;=%]+'
+        urls = re.findall(pattern, decoded_content)
         print(f"\n=== URLs Found ({len(urls)}) ===")
         for i, url in enumerate(urls[:10]):  # Show first 10
             print(f"{i+1}. {url}")
