@@ -27,15 +27,30 @@ def safely_examine_data():
             # Try to decode if it's base64
             try:
                 decoded_content = base64.b64decode(content).decode('utf-8', errors='ignore')
-                # print(f"\n=== Decoded Settings (first 500 chars) ===")
-                # print(decoded_content[:500])
-                # if len(decoded_content) > 500:
-                #     print("... (truncated)")
+                # Check if the decoded content is actually meaningful (contains readable text)
+                if len(decoded_content.strip()) < 10 or not any(c.isalpha() for c in decoded_content):
+                    # Decode succeeded but result is not meaningful, treat as not base64
+                    print("Settings is not base64 encoded (decoded but not meaningful)")
+                    print(f"Raw settings (first 500 chars): {str(content)[:500]}")
+                    decoded_content = content
+                else:
+                    print("Settings appears to be base64 encoded")
+                    # print(f"\n=== Decoded Settings (first 500 chars) ===")
+                    # print(decoded_content[:500])
+                    # if len(decoded_content) > 500:
+                    #     print("... (truncated)")
             except (binascii.Error, UnicodeDecodeError):
                 print("Settings is not base64 encoded")
                 print(f"Raw settings (first 500 chars): {str(content)[:500]}")
                 decoded_content = content
 
+        # Export the decoded content to a file
+        export_filename = "decoded_data.txt"
+        with open(export_filename, 'w', encoding='utf-8') as f:
+            f.write("=== DECODED DISCORD DATA ===\n\n")
+            f.write(decoded_content)
+        print(f"\n=== Data exported to '{export_filename}' ===")
+        
         # Look for URLs in the data using the same pattern as main.py
         import re
         pattern = r'https?:?/+[a-zA-Z0-9\-._~:/?#[\]@!$&\'()*+,;=%]+'
@@ -45,6 +60,14 @@ def safely_examine_data():
             print(f"{i+1}. {url}")
         if len(urls) > 10:
             print(f"... and {len(urls) - 10} more URLs")
+            
+        # Also export URLs to a separate file
+        urls_filename = "found_urls.txt"
+        with open(urls_filename, 'w', encoding='utf-8') as f:
+            f.write("=== FOUND URLs ===\n\n")
+            for i, url in enumerate(urls, 1):
+                f.write(f"{i}. {url}\n")
+        print(f"=== URLs exported to '{urls_filename}' ===")
             
     except Exception as e:
         print(f"Error examining data: {e}")
