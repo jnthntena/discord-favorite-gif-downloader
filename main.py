@@ -924,6 +924,10 @@ async def main():
     print("\nExtracting URLs...")
     parser = ProtobufParser()
     urls = parser.extract_urls_simple(protobuf_data)
+
+    # Fix some URLs' formatting
+    badurl = re.compile("http.+/https?/")
+    urls = [badurl.sub("https://", u) for u in urls]
     
     if not urls:
         print("Error: No URLs found!")
@@ -973,4 +977,5 @@ if __name__ == "__main__":
         sys.exit(0)
     except Exception as e:
         print(f"\nUnexpected error: {e}")
+
         sys.exit(1)
