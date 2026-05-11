@@ -1,4 +1,6 @@
 data.json
 downloaded*/
+downloads*/
 logs*/
 *.txt
+.vscode*/
