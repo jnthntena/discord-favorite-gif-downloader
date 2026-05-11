@@ -1,7 +1,9 @@
 # Discord Favorite (.gif) Downloader
 This script allows you to download all of your favorite gifs from discord very fast without any bullshit.
 
-Still works as of **27.05.2025**
+**09.02.2026** - COMPLETE REWRITE OF CODE
+
+Updated and still works as of this date
 
 ![image](https://github.com/womblee/discord-favorite-gif-downloader/assets/52250786/a116dbf0-1171-4cf4-ac6b-4428cf6824ff)
 
@@ -21,7 +23,7 @@ _To install needed libraries for this script_:
 
 ## Usage
 
-1. **cd** into the directory with the script (e.g `cd C:\Users\CuteCat\\Desktop\GifDownloader`)
+1. **cd** into the directory with the script (e.g `cd C:\Users\CuteCat\Desktop\GifDownloader`)
 2. Copy your favorite .gif(s) data and save it to `data.json` (see article below)
 3. Run this command: `python main.py`
 4. Your .gif(s) should start downloading
